@@ -11,6 +11,7 @@ const Users = ({ users, onDelete, onToggleFavourite }) => {
     const [currentPage, setCurrentPage] = useState(1);
 
     const usersCrop = paginate(users, currentPage, pageSize);
+    if (usersCrop.length === 0) setCurrentPage((prev) => prev - 1);
 
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
