@@ -12,7 +12,7 @@ const Users = ({ users, onDelete, onToggleFavourite }) => {
     const [professions, setProfessions] = useState();
     const [selectedProf, setSelectedProf] = useState();
 
-    const pageSize = 2;
+    const pageSize = 3;
     useEffect(() => {
         api.professions.fetchAll().then((data) => setProfessions(data));
     }, []);
@@ -29,6 +29,8 @@ const Users = ({ users, onDelete, onToggleFavourite }) => {
         : users;
     const count = filteredUsers.length;
     const usersCrop = paginate(filteredUsers, currentPage, pageSize);
+
+    if (usersCrop.length === 0) setCurrentPage((prev) => prev - 1);
 
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
