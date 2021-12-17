@@ -1,18 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { paginate } from "../utils/paginate";
 import Pagination from "./pagination";
-import User from "./user";
 import api from "../api/";
-import PropTypes from "prop-types";
 import GroupList from "./groupList";
 import SearchStatus from "./searchStatus";
+import UsersTable from "./usersTable";
+import _ from "lodash";
 
-const Users = ({ users, onDelete, onToggleFavourite }) => {
+const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfessions] = useState();
     const [selectedProf, setSelectedProf] = useState();
+    const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
+    const [users, setUsers] = useState();
 
-    const pageSize = 3;
+    useEffect(() => {
+        api.users.fetchAll().then((data) => setUsers(data));
+    }, []);
+
+    const handleDelete = (id) => {
+        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+    };
+
+    const handleToggleFavourite = (id) => {
+        const newUsers = [...users];
+        const index = newUsers.findIndex((user) => user._id === id);
+        newUsers[index].isFavourite = !newUsers[index].isFavourite;
+        setUsers(newUsers);
+    };
+
+    const pageSize = 8;
     useEffect(() => {
         api.professions.fetchAll().then((data) => setProfessions(data));
     }, []);
@@ -24,17 +41,24 @@ const Users = ({ users, onDelete, onToggleFavourite }) => {
         setSelectedProf(item);
     };
 
+    const handlePageChange = (pageIndex) => {
+        setCurrentPage(pageIndex);
+    };
+
+    const handleSort = (item) => {
+        setSortBy(item);
+    };
+
+    if (!users) return "loading....";
+
     const filteredUsers = selectedProf
         ? users.filter((user) => user.profession._id === selectedProf._id)
         : users;
     const count = filteredUsers.length;
-    const usersCrop = paginate(filteredUsers, currentPage, pageSize);
+    const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
+    const usersCrop = paginate(sortedUsers, currentPage, pageSize);
 
     if (usersCrop.length === 0) setCurrentPage((prev) => prev - 1);
-
-    const handlePageChange = (pageIndex) => {
-        setCurrentPage(pageIndex);
-    };
 
     const clearFilter = () => {
         setSelectedProf();
@@ -60,29 +84,13 @@ const Users = ({ users, onDelete, onToggleFavourite }) => {
             <div className="d-flex flex-column">
                 {<SearchStatus number={count} />}
                 {count > 0 && (
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Имя</th>
-                                <th scope="col">Качества</th>
-                                <th scope="col">Профессия</th>
-                                <th scope="col">Встретился, раз</th>
-                                <th scope="col">Оценка</th>
-                                <th scope="col">Избранное</th>
-                                <th scope="col">&nbsp;</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {usersCrop.map((user) => (
-                                <User
-                                    key={user._id}
-                                    user={user}
-                                    onDelete={onDelete}
-                                    onToggleFavourite={onToggleFavourite}
-                                />
-                            ))}
-                        </tbody>
-                    </table>
+                    <UsersTable
+                        users={usersCrop}
+                        onDelete={handleDelete}
+                        onToggleFavourite={handleToggleFavourite}
+                        onSort={handleSort}
+                        selectedSort={sortBy}
+                    />
                 )}
                 <div className="d-flex justify-content-center">
                     <Pagination
@@ -95,12 +103,6 @@ const Users = ({ users, onDelete, onToggleFavourite }) => {
             </div>
         </div>
     );
-};
-
-Users.propTypes = {
-    users: PropTypes.arrayOf(PropTypes.object).isRequired,
-    onDelete: PropTypes.func.isRequired,
-    onToggleFavourite: PropTypes.func.isRequired
 };
 
 export default Users;
