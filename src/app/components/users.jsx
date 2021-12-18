@@ -50,6 +50,10 @@ const Users = () => {
         setSortBy(item);
     };
 
+    const clearFilter = () => {
+        setSelectedProf();
+    };
+
     if (!users) return "loading....";
 
     const filteredUsers = selectedProf
@@ -59,13 +63,13 @@ const Users = () => {
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
     const usersCrop = paginate(sortedUsers, currentPage, pageSize);
 
-    if (!count) return "There is no users left";
+    if (usersCrop.length === 0 && count) setCurrentPage((prev) => prev - 1);
 
-    if (usersCrop.length === 0) setCurrentPage((prev) => prev - 1);
+    if (users.length === 0) return "No users left";
 
-    const clearFilter = () => {
-        setSelectedProf();
-    };
+    if (!count) {
+        clearFilter();
+    }
 
     return (
         <div className="d-flex">
