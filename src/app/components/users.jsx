@@ -14,6 +14,15 @@ const Users = () => {
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [users, setUsers] = useState();
 
+    const pageSize = 8;
+
+    useEffect(() => {
+        api.professions.fetchAll().then((data) => setProfessions(data));
+    }, []);
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedProf]);
+
     useEffect(() => {
         api.users.fetchAll().then((data) => setUsers(data));
     }, []);
@@ -28,14 +37,6 @@ const Users = () => {
         newUsers[index].isFavourite = !newUsers[index].isFavourite;
         setUsers(newUsers);
     };
-
-    const pageSize = 8;
-    useEffect(() => {
-        api.professions.fetchAll().then((data) => setProfessions(data));
-    }, []);
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [selectedProf]);
 
     const handleProfessionSelect = (item) => {
         setSelectedProf(item);
@@ -57,6 +58,8 @@ const Users = () => {
     const count = filteredUsers.length;
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
     const usersCrop = paginate(sortedUsers, currentPage, pageSize);
+
+    if (!count) return "There is no users left";
 
     if (usersCrop.length === 0) setCurrentPage((prev) => prev - 1);
 
