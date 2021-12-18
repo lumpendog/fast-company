@@ -81,7 +81,7 @@ const Users = () => {
                     </button>
                 </div>
             )}
-            <div className="d-flex flex-column">
+            <div className="d-flex flex-column flex-grow-1">
                 {<SearchStatus number={count} />}
                 {count > 0 && (
                     <UsersTable
