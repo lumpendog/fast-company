@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { paginate } from "../utils/paginate";
 import Pagination from "./pagination";
-import api from "../api/";
+import api from "../api";
 import GroupList from "./groupList";
 import SearchStatus from "./searchStatus";
 import UsersTable from "./usersTable";
 import _ from "lodash";
 
-const Users = () => {
+const UsersList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfessions] = useState();
     const [selectedProf, setSelectedProf] = useState();
@@ -54,7 +54,7 @@ const Users = () => {
         setSelectedProf();
     };
 
-    if (!users) return "loading....";
+    if (!users) return <h2>loading....</h2>;
 
     const filteredUsers = selectedProf
         ? users.filter((user) => user.profession._id === selectedProf._id)
@@ -65,7 +65,7 @@ const Users = () => {
 
     if (usersCrop.length === 0 && count) setCurrentPage((prev) => prev - 1);
 
-    if (users.length === 0) return "No users left";
+    if (users.length === 0) return <h2>No users left</h2>;
 
     if (!count) {
         clearFilter();
@@ -112,4 +112,4 @@ const Users = () => {
     );
 };
 
-export default Users;
+export default UsersList;

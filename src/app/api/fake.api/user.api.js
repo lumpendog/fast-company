@@ -150,6 +150,14 @@ const fetchAll = () =>
         }, 1000);
     });
 
+const getUserById = (id) =>
+    new Promise((resolve) => {
+        window.setTimeout(function () {
+            resolve(users.find((item) => item._id === id));
+        }, 1000);
+    });
+
 export default {
-    fetchAll
+    fetchAll,
+    getUserById
 };
