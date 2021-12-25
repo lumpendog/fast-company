@@ -31,10 +31,10 @@ const UsersList = () => {
         setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
     };
 
-    const handleToggleFavourite = (id) => {
+    const handleToggleBookmark = (id) => {
         const newUsers = [...users];
         const index = newUsers.findIndex((user) => user._id === id);
-        newUsers[index].isFavourite = !newUsers[index].isFavourite;
+        newUsers[index].bookmark = !newUsers[index].bookmark;
         setUsers(newUsers);
     };
 
@@ -94,7 +94,7 @@ const UsersList = () => {
                     <UsersTable
                         users={usersCrop}
                         onDelete={handleDelete}
-                        onToggleFavourite={handleToggleFavourite}
+                        onToggleBookmark={handleToggleBookmark}
                         onSort={handleSort}
                         selectedSort={sortBy}
                     />

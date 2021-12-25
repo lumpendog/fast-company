@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 const UsersTable = ({
     users,
     onDelete,
-    onToggleFavourite,
+    onToggleBookmark,
     onSort,
     selectedSort
 }) => {
@@ -40,9 +40,9 @@ const UsersTable = ({
             component: (user) => (
                 <Bookmark
                     {...{
-                        onToggleFavourite,
+                        onToggleBookmark,
                         _id: user._id,
-                        isFavourite: user.isFavourite
+                        bookmark: user.bookmark
                     }}
                 />
             )
@@ -69,7 +69,7 @@ const UsersTable = ({
 UsersTable.propTypes = {
     users: PropTypes.array.isRequired,
     onDelete: PropTypes.func.isRequired,
-    onToggleFavourite: PropTypes.func.isRequired,
+    onToggleBookmark: PropTypes.func.isRequired,
     onSort: PropTypes.func.isRequired,
     selectedSort: PropTypes.object.isRequired
 };
