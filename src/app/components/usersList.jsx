@@ -7,6 +7,7 @@ import api from "../api";
 import GroupList from "./groupList";
 import SearchStatus from "./searchStatus";
 import UsersTable from "./usersTable";
+import TextField from "./textField";
 
 const UsersList = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -14,6 +15,7 @@ const UsersList = () => {
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [users, setUsers] = useState();
+    const [searchText, setSearchText] = useState("");
 
     const pageSize = 8;
 
@@ -41,6 +43,7 @@ const UsersList = () => {
 
     const handleProfessionSelect = (item) => {
         setSelectedProf(item);
+        setSearchText("");
     };
 
     const handlePageChange = (pageIndex) => {
@@ -55,11 +58,26 @@ const UsersList = () => {
         setSelectedProf();
     };
 
+    const handleSearchChange = ({ target }) => {
+        setSearchText(target.value);
+        clearFilter();
+    };
+
     if (!users) return <h2>loading....</h2>;
 
-    const filteredUsers = selectedProf
-        ? users.filter((user) => user.profession._id === selectedProf._id)
-        : users;
+    const filterUsers = (users) => {
+        if (selectedProf) {
+            return users.filter(
+                (user) => user.profession._id === selectedProf._id
+            );
+        } else if (searchText !== "") {
+            return users.filter((user) =>
+                _.includes(_.lowerCase(user.name), _.lowerCase(searchText))
+            );
+        } else return users;
+    };
+
+    const filteredUsers = filterUsers(users);
     const count = filteredUsers.length;
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
     const usersCrop = paginate(sortedUsers, currentPage, pageSize);
@@ -67,10 +85,6 @@ const UsersList = () => {
     if (usersCrop.length === 0 && count) setCurrentPage((prev) => prev - 1);
 
     if (users.length === 0) return <h2>No users left</h2>;
-
-    if (!count) {
-        clearFilter();
-    }
 
     return (
         <div className="d-flex">
@@ -91,6 +105,12 @@ const UsersList = () => {
             )}
             <div className="d-flex flex-column flex-grow-1">
                 {<SearchStatus number={count} />}
+                <TextField
+                    name="search"
+                    placeholder="Search..."
+                    value={searchText}
+                    onChange={handleSearchChange}
+                />
                 {count > 0 && (
                     <UsersTable
                         users={usersCrop}

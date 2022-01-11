@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-const TextField = ({ label, type, name, value, onChange, error }) => {
+const TextField = ({
+    label,
+    type,
+    name,
+    value,
+    onChange,
+    error,
+    placeholder
+}) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const renderInputClasses = () => {
@@ -22,6 +30,7 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
                     value={value}
                     name={name}
                     onChange={onChange}
+                    placeholder={placeholder}
                     className={renderInputClasses()}
                 />
                 {type === "password" && (
@@ -43,7 +52,8 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
 };
 
 TextField.defaultProps = {
-    type: "text"
+    type: "text",
+    placeholder: ""
 };
 TextField.propTypes = {
     label: PropTypes.string,
@@ -51,7 +61,8 @@ TextField.propTypes = {
     name: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    error: PropTypes.string
+    error: PropTypes.string,
+    placeholder: PropTypes.string
 };
 
 export default TextField;
