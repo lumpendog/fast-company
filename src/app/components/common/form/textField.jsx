@@ -10,6 +10,10 @@ const TextField = ({
     error,
     placeholder
 }) => {
+    const handleChange = ({ target }) => {
+        onChange({ name: target.name, value: target.value });
+    };
+
     const [showPassword, setShowPassword] = useState(false);
 
     const renderInputClasses = () => {
@@ -29,7 +33,7 @@ const TextField = ({
                     id={name}
                     value={value}
                     name={name}
-                    onChange={onChange}
+                    onChange={handleChange}
                     placeholder={placeholder}
                     className={renderInputClasses()}
                 />
