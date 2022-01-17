@@ -9,12 +9,12 @@ const UserPage = ({ userId }) => {
     const history = useHistory();
     const [user, setUser] = useState(null);
     useEffect(() => {
-        api.users.getUserById(userId).then((data) => {
+        api.users.getById(userId).then((data) => {
             setUser(data);
         });
     }, []);
     const handleAllUsersClick = () => {
-        history.push("/users");
+        history.push(`/users/${userId}/edit`);
     };
     if (!user) return <h2>Loading...</h2>;
     return (
@@ -25,7 +25,7 @@ const UserPage = ({ userId }) => {
             <p>Completed meetings: {user.completedMeetings}</p>
             <h2>Rate: {user.rate}</h2>
             <button className="btn btn-primary" onClick={handleAllUsersClick}>
-                Все пользователи
+                Изменить
             </button>
         </>
     );

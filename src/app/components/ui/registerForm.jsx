@@ -12,7 +12,7 @@ const RegisterForm = () => {
         email: "",
         password: "",
         profession: "",
-        gender: "male",
+        sex: "male",
         qualities: [],
         license: false
     });
@@ -114,11 +114,12 @@ const RegisterForm = () => {
             <RadioField
                 options={[
                     { name: "Мужчина", value: "male" },
-                    { name: "Женщина", value: "female" }
+                    { name: "Женщина", value: "female" },
+                    { name: "Другое", value: "other" }
                 ]}
-                name="gender"
+                name="sex"
                 onChange={handleChange}
-                value={data.gender}
+                value={data.sex}
                 label="Выберите пол"
             />
 
