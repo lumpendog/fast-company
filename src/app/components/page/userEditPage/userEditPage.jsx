@@ -16,8 +16,18 @@ const UserEditPage = ({ userId }) => {
     const [errors, setErrors] = useState();
     const history = useHistory();
 
+    const transformData = (data) => {
+        return data.map((item) => ({ label: item.name, value: item._id }));
+    };
+
     useEffect(() => {
-        api.users.getById(userId).then((data) => setUser(data));
+        api.users.getById(userId).then(({ profession, qualities, ...user }) =>
+            setUser({
+                ...user,
+                profession: profession._id,
+                qualities: transformData(qualities)
+            })
+        );
         api.professions.fetchAll().then((data) => setProfessions(data));
         api.qualities.fetchAll().then((data) => setQualities(data));
     }, []);
@@ -46,31 +56,23 @@ const UserEditPage = ({ userId }) => {
         setUser((prevState) => ({ ...prevState, [target.name]: target.value }));
     };
 
-    const handleProfessionChange = ({ value }) => {
-        const profName =
-            professions[
-                Object.keys(professions).find(
-                    (item) => professions[item]._id === value
-                )
-            ].name;
-        setUser((prevState) => ({
-            ...prevState,
-            profession: { _id: value, name: profName }
-        }));
+    const getProfessionById = (id) => {
+        for (const prof in professions) {
+            const profData = professions[prof];
+            if (profData._id === id) return profData;
+        }
     };
 
-    const handleQualitiesChange = ({ value }) => {
-        const formattedQualities = value.map((item) => ({
-            ...qualities[
-                Object.keys(qualities).find(
-                    (key) => qualities[key]._id === item.value
-                )
-            ]
-        }));
-        setUser((prevState) => ({
-            ...prevState,
-            qualities: formattedQualities
-        }));
+    const getQualities = (elements) => {
+        const resultArray = [];
+        for (const el of elements) {
+            for (const key in qualities) {
+                if (el.value === qualities[key]._id) {
+                    resultArray.push(qualities[key]);
+                }
+            }
+        }
+        return resultArray;
     };
 
     const validate = () => {
@@ -82,14 +84,20 @@ const UserEditPage = ({ userId }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!validate) return;
-        api.users.update(user._id, user).then(history.push(`/users/${userId}`));
+        api.users
+            .update(user._id, {
+                ...user,
+                profession: getProfessionById(user.profession),
+                qualities: getQualities(user.qualities)
+            })
+            .then(history.push(`/users/${userId}`));
     };
 
     return (
         <div className="container mt-5">
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-4">
-                    {user && qualities ? (
+                    {user && qualities && professions ? (
                         <form onSubmit={handleSubmit}>
                             <TextField
                                 label="Имя"
@@ -107,8 +115,8 @@ const UserEditPage = ({ userId }) => {
                             />
                             <SelectField
                                 label="Выберите профессию"
-                                value={user.profession._id}
-                                onChange={handleProfessionChange}
+                                value={user.profession}
+                                onChange={handleChange}
                                 name="profession"
                                 options={professions}
                             />
@@ -126,8 +134,7 @@ const UserEditPage = ({ userId }) => {
                             <MultiSelectField
                                 name="qualities"
                                 label="Выберите ваши качества"
-                                value={user.qualities}
-                                onChange={handleQualitiesChange}
+                                onChange={handleChange}
                                 options={qualities}
                                 defaultValue={user.qualities}
                             />

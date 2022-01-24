@@ -15,11 +15,6 @@ const MultiSelectField = ({ options, onChange, name, label, defaultValue }) => {
         }
     };
 
-    // const formattedOptions = Object.keys(options).map((key) => ({
-    //     value: options[key]._id,
-    //     label: options[key].name
-    // }));
-
     const handleChange = (e) => {
         onChange({ name: name, value: e });
     };
@@ -35,7 +30,7 @@ const MultiSelectField = ({ options, onChange, name, label, defaultValue }) => {
                 classNamePrefix="select"
                 onChange={handleChange}
                 name={name}
-                defaultValue={formatData(defaultValue)}
+                defaultValue={defaultValue}
             />
         </div>
     );

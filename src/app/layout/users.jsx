@@ -6,9 +6,9 @@ import UserPage from "../components/page/userPage";
 import UserEditPage from "../components/page/userEditPage";
 
 const Users = () => {
-    const { userId, userParam } = useParams();
+    const { userId, edit } = useParams();
     return userId ? (
-        userParam === "edit" ? (
+        edit === "edit" ? (
             <UserEditPage userId={userId} />
         ) : (
             <UserPage userId={userId} />

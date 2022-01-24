@@ -13,8 +13,8 @@ const UserPage = ({ userId }) => {
             setUser(data);
         });
     }, []);
-    const handleAllUsersClick = () => {
-        history.push(`/users/${userId}/edit`);
+    const handleEditClick = () => {
+        history.push(history.location.pathname + "/edit");
     };
     if (!user) return <h2>Loading...</h2>;
     return (
@@ -24,7 +24,7 @@ const UserPage = ({ userId }) => {
             <Qualities qualitiesArray={user.qualities} />
             <p>Completed meetings: {user.completedMeetings}</p>
             <h2>Rate: {user.rate}</h2>
-            <button className="btn btn-primary" onClick={handleAllUsersClick}>
+            <button className="btn btn-primary" onClick={handleEditClick}>
                 Изменить
             </button>
         </>
