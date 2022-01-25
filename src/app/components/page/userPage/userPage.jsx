@@ -1,32 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import api from "../../../api";
-import Qualities from "../../ui/qualities";
+import UserCard from "../../ui/userCard";
+import QualitiesCard from "../../ui/qualitiesCard";
+import MeetingsCard from "../../ui/meetingsCard";
+import Comments from "../../ui/comments";
 
 const UserPage = ({ userId }) => {
-    const history = useHistory();
     const [user, setUser] = useState(null);
     useEffect(() => {
         api.users.getById(userId).then((data) => {
             setUser(data);
         });
     }, []);
-    const handleEditClick = () => {
-        history.push(history.location.pathname + "/edit");
-    };
+
     if (!user) return <h2>Loading...</h2>;
     return (
         <>
-            <h1>{user.name}</h1>
-            <h2>Профессия: {user.profession.name}</h2>
-            <Qualities qualitiesArray={user.qualities} />
-            <p>Completed meetings: {user.completedMeetings}</p>
-            <h2>Rate: {user.rate}</h2>
-            <button className="btn btn-primary" onClick={handleEditClick}>
-                Изменить
-            </button>
+            <div className="container">
+                <div className="row gutters-sm">
+                    <div className="col-md-4 mb-3">
+                        <UserCard user={user} />
+                        <QualitiesCard qualities={user.qualities} />
+                        <MeetingsCard value={user.completedMeetings} />
+                    </div>
+                    <div className="col-md-8">
+                        <Comments userId={user._id} />
+                    </div>
+                </div>
+            </div>
         </>
     );
 };

@@ -58,7 +58,7 @@ const UsersListPage = () => {
         setSelectedProf();
     };
 
-    const handleSearchChange = ({ target }) => {
+    const handleSearchChange = (target) => {
         setSearchText(target.value);
         clearFilter();
     };

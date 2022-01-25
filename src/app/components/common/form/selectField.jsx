@@ -62,7 +62,7 @@ SelectField.defaultProps = {
     defaultOption: "Выберите..."
 };
 SelectField.propTypes = {
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired,

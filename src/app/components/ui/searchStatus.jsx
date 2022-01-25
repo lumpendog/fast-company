@@ -1,17 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
+import declOfNum from "../../utils/declOfNum";
 
 const SearchStatus = ({ number }) => {
-    // Helper function to find the right phrase for current number
-    const declOfNum = (number, titles) => {
-        const cases = [2, 0, 1, 1, 1, 2];
-        return titles[
-            number % 100 > 4 && number % 100 < 20
-                ? 2
-                : cases[number % 10 < 5 ? number % 10 : 5]
-        ];
-    };
-
     const variantsPhrases = [
         "человек тусанет",
         "человека тусанут",
