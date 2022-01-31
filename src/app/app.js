@@ -5,17 +5,28 @@ import Main from "./layout/main";
 import Login from "./layout/login";
 import Users from "./layout/users";
 import NavBar from "./components/ui/navBar";
+import { ToastContainer } from "react-toastify";
+import { ProfessionContextProvider } from "./hooks/useProfession";
+import { QualityContextProvider } from "./hooks/useQuality";
 
 const App = () => {
     return (
         <>
             <NavBar />
             <Switch>
-                <Route path="/login/:type?" component={Login} />
-                <Route path="/users/:userId?/:edit?" component={Users} />
+                <ProfessionContextProvider>
+                    <QualityContextProvider>
+                        <Route path="/login/:type?" component={Login} />
+                        <Route
+                            path="/users/:userId?/:edit?"
+                            component={Users}
+                        />
+                    </QualityContextProvider>
+                </ProfessionContextProvider>
                 <Route path="/" exact component={Main} />
                 <Redirect to="/" />
             </Switch>
+            <ToastContainer />
         </>
     );
 };

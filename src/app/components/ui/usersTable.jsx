@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import Bookmark from "../common/bookmark";
 import Qualities from "./qualities";
 import Table from "../common/table";
+import Profession from "./profession";
+import { useQuality } from "../../hooks/useQuality";
 
 const UsersTable = ({
     users,
@@ -13,6 +15,7 @@ const UsersTable = ({
     onSort,
     selectedSort
 }) => {
+    const { getQuality } = useQuality();
     const columns = {
         name: {
             path: "name",
@@ -23,9 +26,16 @@ const UsersTable = ({
         },
         qualities: {
             name: "Качества",
-            component: (user) => <Qualities qualitiesArray={user.qualities} />
+            component: (user) => (
+                <Qualities
+                    qualitiesArray={user.qualities.map((id) => getQuality(id))}
+                />
+            )
         },
-        professionName: { path: "profession.name", name: "Профессия" },
+        professionName: {
+            name: "Профессия",
+            component: (user) => <Profession id={user.profession} />
+        },
         completedMeetings: {
             path: "completedMeetings",
             name: "Встретился, раз"

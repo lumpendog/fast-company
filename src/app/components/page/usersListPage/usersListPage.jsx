@@ -8,14 +8,15 @@ import GroupList from "../../common/groupList";
 import SearchStatus from "../../ui/searchStatus";
 import UsersTable from "../../ui/usersTable";
 import TextField from "../../common/form/textField";
+import { useUsers } from "../../../hooks/useUsers";
 
 const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfessions] = useState();
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
-    const [users, setUsers] = useState();
     const [searchText, setSearchText] = useState("");
+    const { users } = useUsers();
 
     const pageSize = 8;
 
@@ -26,19 +27,17 @@ const UsersListPage = () => {
         setCurrentPage(1);
     }, [selectedProf]);
 
-    useEffect(() => {
-        api.users.fetchAll().then((data) => setUsers(data));
-    }, []);
-
     const handleDelete = (id) => {
-        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+        // setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+        console.log(id);
     };
 
     const handleToggleBookmark = (id) => {
         const newUsers = [...users];
         const index = newUsers.findIndex((user) => user._id === id);
         newUsers[index].bookmark = !newUsers[index].bookmark;
-        setUsers(newUsers);
+        // setUsers(newUsers);
+        console.log(newUsers);
     };
 
     const handleProfessionSelect = (item) => {
@@ -74,7 +73,9 @@ const UsersListPage = () => {
             return users.filter((user) =>
                 _.includes(_.lowerCase(user.name), _.lowerCase(searchText))
             );
-        } else return users;
+        } else {
+            return users;
+        }
     };
 
     const filteredUsers = filterUsers(users);
