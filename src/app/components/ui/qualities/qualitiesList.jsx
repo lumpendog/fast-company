@@ -10,14 +10,14 @@ const QualitiesList = ({ qualitiesArray }) => {
     return (
         <>
             {qualitiesArray.map((item) => (
-                <Quality key={item._id} {...item} />
+                <Quality key={item} id={item} />
             ))}
         </>
     );
 };
 
 QualitiesList.propTypes = {
-    qualitiesArray: PropTypes.arrayOf(PropTypes.object)
+    qualitiesArray: PropTypes.arrayOf(PropTypes.string)
 };
 
 export default QualitiesList;
