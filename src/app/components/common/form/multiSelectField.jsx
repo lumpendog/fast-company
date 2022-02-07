@@ -37,7 +37,8 @@ const MultiSelectField = ({ options, onChange, name, label, defaultValue }) => {
 };
 
 MultiSelectField.propTypes = {
-    options: PropTypes.object.isRequired,
+    options: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
+        .isRequired,
     onChange: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,

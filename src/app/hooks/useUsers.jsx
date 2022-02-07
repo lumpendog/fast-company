@@ -40,8 +40,12 @@ export const UserContextProvider = ({ children }) => {
         setIsLoading(false);
     }
 
+    function getUserById(id) {
+        return users.filter((u) => u._id === id)[0];
+    }
+
     return (
-        <UserContext.Provider value={{ users }}>
+        <UserContext.Provider value={{ users, getUserById }}>
             {!isLoading ? children : <h1>Users are loading...</h1>}
         </UserContext.Provider>
     );
