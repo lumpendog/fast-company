@@ -6,7 +6,7 @@ import { useQuality } from "../../../hooks/useQuality";
 
 const QualitiesList = ({ qualitiesArray }) => {
     const { isLoading } = useQuality();
-    if (isLoading) return <h2>loading...</h2>;
+    if (isLoading) return <>loading...</>;
     return (
         <>
             {qualitiesArray.map((item) => (

@@ -41,7 +41,7 @@ export const UserContextProvider = ({ children }) => {
     }
 
     function getUserById(id) {
-        return users.filter((u) => u._id === id)[0];
+        return users.find((u) => u._id === id);
     }
 
     return (

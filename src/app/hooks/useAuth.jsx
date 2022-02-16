@@ -3,9 +3,17 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import userService from "../services/user.service";
 import { toast } from "react-toastify";
-import { setTokens } from "../services/local.storage.service";
+import localStorageService, {
+    setTokens
+} from "../services/local.storage.service";
+import { useHistory } from "react-router-dom";
 
-const httpAuth = axios.create();
+export const httpAuth = axios.create({
+    baseURL: "https://identitytoolkit.googleapis.com/v1/",
+    params: {
+        key: process.env.REACT_APP_FIREBASE_KEY
+    }
+});
 const AuthContext = React.createContext();
 
 export const useAuth = () => {
@@ -13,11 +21,17 @@ export const useAuth = () => {
 };
 
 export const AuthContextProvider = ({ children }) => {
-    const [currentUser, setCurrentUser] = useState({});
+    const [currentUser, setCurrentUser] = useState();
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const history = useHistory();
+
+    function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
 
     async function signUp({ email, password, ...rest }) {
-        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`;
+        const url = `accounts:signUp`;
         try {
             const { data } = await httpAuth.post(url, {
                 email,
@@ -25,7 +39,18 @@ export const AuthContextProvider = ({ children }) => {
                 returnSecureToken: true
             });
             setTokens(data);
-            createUser({ _id: data.localId, email, ...rest });
+            await createUser({
+                _id: data.localId,
+                email,
+                rate: randomInt(1, 5),
+                completedMeetings: randomInt(0, 200),
+                image: `https://avatars.dicebear.com/api/avataaars/${(
+                    Math.random() + 1
+                )
+                    .toString(36)
+                    .substring(7)}.svg`,
+                ...rest
+            });
         } catch (e) {
             errorCatcher(e);
             const { code, message } = e.response.data.error;
@@ -41,7 +66,7 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     async function signIn({ email, password }) {
-        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_KEY}`;
+        const url = `accounts:signInWithPassword`;
         try {
             const { data } = await httpAuth.post(url, {
                 email,
@@ -49,6 +74,7 @@ export const AuthContextProvider = ({ children }) => {
                 returnSecureToken: true
             });
             setTokens(data);
+            await getUserData();
         } catch (e) {
             errorCatcher(e);
             const { code, message } = e.response.data.error;
@@ -67,14 +93,39 @@ export const AuthContextProvider = ({ children }) => {
         }
     }
 
+    function logout() {
+        localStorageService.removeAuthData();
+        setCurrentUser(null);
+        history.push("/");
+    }
+
     async function createUser(data) {
         try {
-            const { content } = userService.create(data);
+            const { content } = await userService.create(data);
             setCurrentUser(content);
         } catch (e) {
             errorCatcher(e);
         }
     }
+
+    async function getUserData() {
+        try {
+            const { content } = await userService.getCurrentUser();
+            setCurrentUser(content);
+        } catch (e) {
+            errorCatcher(e);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        if (localStorageService.getAccessToken()) {
+            getUserData();
+        } else {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         if (error !== null) {
@@ -89,8 +140,8 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ signUp, signIn, currentUser }}>
-            {children}
+        <AuthContext.Provider value={{ signUp, signIn, currentUser, logout }}>
+            {!isLoading ? children : "loading"}
         </AuthContext.Provider>
     );
 };

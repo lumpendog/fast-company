@@ -24,7 +24,7 @@ const TextAreaField = ({
             <div className="input-group has-validation">
                 <textarea
                     id={name}
-                    value={value}
+                    value={value || ""}
                     name={name}
                     onChange={handleChange}
                     placeholder={placeholder}
@@ -44,7 +44,7 @@ TextAreaField.defaultProps = {
 TextAreaField.propTypes = {
     label: PropTypes.string,
     name: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     error: PropTypes.string,
     placeholder: PropTypes.string,
