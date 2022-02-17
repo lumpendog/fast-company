@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { useParams } from "react-router-dom";
 
 import UserCard from "../../ui/userCard";
 import QualitiesCard from "../../ui/qualitiesCard";
@@ -8,7 +8,8 @@ import Comments from "../../ui/comments";
 import { useUsers } from "../../../hooks/useUsers";
 import { CommentsContextProvider } from "../../../hooks/useComments";
 
-const UserPage = ({ userId }) => {
+const UserPage = () => {
+    const { userId } = useParams();
     const { isLoading, getUserById } = useUsers();
     const user = getUserById(userId);
 
@@ -31,9 +32,6 @@ const UserPage = ({ userId }) => {
             </div>
         </>
     );
-};
-UserPage.propTypes = {
-    userId: PropTypes.string.isRequired
 };
 
 export default UserPage;

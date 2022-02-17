@@ -99,6 +99,17 @@ export const AuthContextProvider = ({ children }) => {
         history.push("/");
     }
 
+    async function updateUser(data) {
+        try {
+            const { content } = await userService.update(data);
+            setCurrentUser(content);
+            history.push("/users/" + currentUser._id);
+            return content;
+        } catch (e) {
+            errorCatcher(e);
+        }
+    }
+
     async function createUser(data) {
         try {
             const { content } = await userService.create(data);
@@ -140,7 +151,16 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ signUp, signIn, currentUser, logout }}>
+        <AuthContext.Provider
+            value={{
+                signUp,
+                signIn,
+                currentUser,
+                logout,
+                isLoading,
+                updateUser
+            }}
+        >
             {!isLoading ? children : "loading"}
         </AuthContext.Provider>
     );

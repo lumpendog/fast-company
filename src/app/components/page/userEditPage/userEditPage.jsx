@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import { useHistory } from "react-router-dom";
-import api from "../../../api";
 
 import { validator } from "../../../utils/validator";
 import TextField from "../../common/form/textField";
@@ -9,28 +6,33 @@ import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import BackHistoryButton from "../../common/backHistoryButton";
+import { useAuth } from "../../../hooks/useAuth";
+import { useQuality } from "../../../hooks/useQuality";
+import { useProfession } from "../../../hooks/useProfession";
+import { Redirect, useParams } from "react-router-dom";
 
-const UserEditPage = ({ userId }) => {
+const UserEditPage = () => {
     const [user, setUser] = useState();
-    const [professions, setProfessions] = useState();
-    const [qualities, setQualities] = useState();
     const [errors, setErrors] = useState();
-    const history = useHistory();
+    const { userId } = useParams();
+
+    const { currentUser, updateUser } = useAuth();
+    const { qualities, getQuality } = useQuality();
+    const { professions } = useProfession();
 
     const transformData = (data) => {
-        return data.map((item) => ({ label: item.name, value: item._id }));
+        const newData = data.map((id) => getQuality(id));
+        return newData.map((item) => ({
+            label: item.name,
+            value: item._id
+        }));
     };
 
     useEffect(() => {
-        api.users.getById(userId).then(({ profession, qualities, ...user }) =>
-            setUser({
-                ...user,
-                profession: profession._id,
-                qualities: transformData(qualities)
-            })
-        );
-        api.professions.fetchAll().then((data) => setProfessions(data));
-        api.qualities.fetchAll().then((data) => setQualities(data));
+        setUser({
+            ...currentUser,
+            qualities: transformData(currentUser.qualities)
+        });
     }, []);
 
     useEffect(() => {
@@ -41,6 +43,10 @@ const UserEditPage = ({ userId }) => {
         name: {
             isRequired: {
                 message: "Необходимо заполнить имя пользователя"
+            },
+            min: {
+                message: "Имя должно быть длиннее 2 символов",
+                value: "3"
             }
         },
         email: {
@@ -57,25 +63,6 @@ const UserEditPage = ({ userId }) => {
         setUser((prevState) => ({ ...prevState, [target.name]: target.value }));
     };
 
-    const getProfessionById = (id) => {
-        for (const prof in professions) {
-            const profData = professions[prof];
-            if (profData._id === id) return profData;
-        }
-    };
-
-    const getQualities = (elements) => {
-        const resultArray = [];
-        for (const el of elements) {
-            for (const key in qualities) {
-                if (el.value === qualities[key]._id) {
-                    resultArray.push(qualities[key]);
-                }
-            }
-        }
-        return resultArray;
-    };
-
     const validate = () => {
         const errors = validator(user, validateConfig);
         setErrors(errors);
@@ -84,22 +71,25 @@ const UserEditPage = ({ userId }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!validate) return;
-        api.users
-            .update(user._id, {
-                ...user,
-                profession: getProfessionById(user.profession),
-                qualities: getQualities(user.qualities)
-            })
-            .then(history.push(`/users/${userId}`));
+        if (!validate()) {
+            return;
+        }
+        updateUser({
+            ...user,
+            qualities: user.qualities.map((q) => q.value)
+        });
     };
+
+    if (currentUser._id !== userId) {
+        return <Redirect to={"/users/" + currentUser._id + "/edit"} />;
+    }
 
     return (
         <div className="container mt-5">
             <BackHistoryButton />
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-4">
-                    {user && qualities && professions ? (
+                    {user ? (
                         <form onSubmit={handleSubmit}>
                             <TextField
                                 label="Имя"
@@ -140,7 +130,14 @@ const UserEditPage = ({ userId }) => {
                                 options={qualities}
                                 defaultValue={user.qualities}
                             />
-                            <button className="btn btn-primary w-100 mx-auto mb-4">
+                            <button
+                                className={
+                                    "btn btn-primary w-100 mx-auto mb-4" +
+                                    (Object.keys(errors).length === 0
+                                        ? ""
+                                        : " disabled")
+                                }
+                            >
                                 Обновить
                             </button>
                         </form>
@@ -151,10 +148,6 @@ const UserEditPage = ({ userId }) => {
             </div>
         </div>
     );
-};
-
-UserEditPage.propTypes = {
-    userId: PropTypes.string.isRequired
 };
 
 export default UserEditPage;
