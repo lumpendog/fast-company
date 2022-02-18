@@ -9,16 +9,18 @@ import BackHistoryButton from "../../common/backHistoryButton";
 import { useAuth } from "../../../hooks/useAuth";
 import { useQuality } from "../../../hooks/useQuality";
 import { useProfession } from "../../../hooks/useProfession";
-import { Redirect, useParams } from "react-router-dom";
+import { Redirect, useHistory, useParams } from "react-router-dom";
 
 const UserEditPage = () => {
-    const [user, setUser] = useState();
+    const [data, setData] = useState();
     const [errors, setErrors] = useState();
+    const [isLoading, setIsLoading] = useState(true);
     const { userId } = useParams();
+    const history = useHistory();
 
-    const { currentUser, updateUser } = useAuth();
-    const { qualities, getQuality } = useQuality();
-    const { professions } = useProfession();
+    const { currentUser, updateUserData } = useAuth();
+    const { qualities, getQuality, isLoading: qualitiesLoading } = useQuality();
+    const { professions, isLoading: professionsLoading } = useProfession();
 
     const transformData = (data) => {
         const newData = data.map((id) => getQuality(id));
@@ -29,15 +31,23 @@ const UserEditPage = () => {
     };
 
     useEffect(() => {
-        setUser({
-            ...currentUser,
-            qualities: transformData(currentUser.qualities)
-        });
-    }, []);
+        if (!qualitiesLoading && !professionsLoading && currentUser && !data) {
+            setData({
+                ...currentUser,
+                qualities: transformData(currentUser.qualities)
+            });
+        }
+    }, [qualitiesLoading, professionsLoading, currentUser, data]);
+
+    useEffect(() => {
+        if (data && isLoading) {
+            setIsLoading(false);
+        }
+    }, [data]);
 
     useEffect(() => {
         validate();
-    }, [user]);
+    }, [data]);
 
     const validateConfig = {
         name: {
@@ -60,24 +70,25 @@ const UserEditPage = () => {
     };
 
     const handleChange = (target) => {
-        setUser((prevState) => ({ ...prevState, [target.name]: target.value }));
+        setData((prevState) => ({ ...prevState, [target.name]: target.value }));
     };
 
     const validate = () => {
-        const errors = validator(user, validateConfig);
+        const errors = validator(data, validateConfig);
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) {
             return;
         }
-        updateUser({
-            ...user,
-            qualities: user.qualities.map((q) => q.value)
+        await updateUserData({
+            ...data,
+            qualities: data.qualities.map((q) => q.value)
         });
+        history.push("/users/" + currentUser._id);
     };
 
     if (currentUser._id !== userId) {
@@ -89,25 +100,25 @@ const UserEditPage = () => {
             <BackHistoryButton />
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-4">
-                    {user ? (
+                    {!isLoading ? (
                         <form onSubmit={handleSubmit}>
                             <TextField
                                 label="Имя"
                                 name="name"
-                                value={user.name}
+                                value={data.name}
                                 onChange={handleChange}
                                 error={errors.name}
                             />
                             <TextField
                                 label="Электронная почта"
                                 name="email"
-                                value={user.email}
+                                value={data.email}
                                 onChange={handleChange}
                                 error={errors.email}
                             />
                             <SelectField
                                 label="Выберите профессию"
-                                value={user.profession}
+                                value={data.profession}
                                 onChange={handleChange}
                                 name="profession"
                                 options={professions}
@@ -121,14 +132,14 @@ const UserEditPage = () => {
                                 ]}
                                 name="sex"
                                 onChange={handleChange}
-                                value={user.sex}
+                                value={data.sex}
                             />
                             <MultiSelectField
                                 name="qualities"
                                 label="Выберите ваши качества"
                                 onChange={handleChange}
                                 options={qualities}
-                                defaultValue={user.qualities}
+                                defaultValue={data.qualities}
                             />
                             <button
                                 className={

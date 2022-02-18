@@ -99,11 +99,10 @@ export const AuthContextProvider = ({ children }) => {
         history.push("/");
     }
 
-    async function updateUser(data) {
+    async function updateUserData(data) {
         try {
             const { content } = await userService.update(data);
             setCurrentUser(content);
-            history.push("/users/" + currentUser._id);
             return content;
         } catch (e) {
             errorCatcher(e);
@@ -158,7 +157,7 @@ export const AuthContextProvider = ({ children }) => {
                 currentUser,
                 logout,
                 isLoading,
-                updateUser
+                updateUserData
             }}
         >
             {!isLoading ? children : "loading"}
