@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 
 import Main from "./layout/main";
@@ -11,8 +11,16 @@ import { QualityContextProvider } from "./hooks/useQuality";
 import { AuthContextProvider } from "./hooks/useAuth";
 import ProtectedRoute from "./components/common/protectedRoute";
 import Logout from "./layout/logout";
+import { useDispatch } from "react-redux";
+import { loadQualitiesList } from "./store/qualities";
 
 const App = () => {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(loadQualitiesList());
+    }, []);
+
     return (
         <>
             <AuthContextProvider>
