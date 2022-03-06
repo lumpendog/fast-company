@@ -6,24 +6,34 @@ import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import BackHistoryButton from "../../common/backHistoryButton";
-import { useAuth } from "../../../hooks/useAuth";
-import { useQuality } from "../../../hooks/useQuality";
-import { useProfession } from "../../../hooks/useProfession";
-import { Redirect, useHistory, useParams } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
+import {
+    getQualities,
+    getQualitiesLoadingStatus
+} from "../../../store/qualities";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from "../../../store/professions";
+import { getCurrentUserData, updateUserData } from "../../../store/users";
 
 const UserEditPage = () => {
     const [data, setData] = useState();
     const [errors, setErrors] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const { userId } = useParams();
-    const history = useHistory();
+    const qualities = useSelector(getQualities());
+    const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
 
-    const { currentUser, updateUserData } = useAuth();
-    const { qualities, getQuality, isLoading: qualitiesLoading } = useQuality();
-    const { professions, isLoading: professionsLoading } = useProfession();
+    const currentUser = useSelector(getCurrentUserData());
+    const dispatch = useDispatch();
+
+    const professions = useSelector(getProfessions());
+    const professionsLoading = useSelector(getProfessionsLoadingStatus());
 
     const transformData = (data) => {
-        const newData = data.map((id) => getQuality(id));
+        const newData = data.map((id) => qualities.find((q) => q._id === id));
         return newData.map((item) => ({
             label: item.name,
             value: item._id
@@ -79,16 +89,18 @@ const UserEditPage = () => {
         return Object.keys(errors).length === 0;
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         if (!validate()) {
             return;
         }
-        await updateUserData({
-            ...data,
-            qualities: data.qualities.map((q) => q.value)
-        });
-        history.push("/users/" + currentUser._id);
+        dispatch(
+            updateUserData({
+                ...data,
+                qualities: data.qualities.map((q) => q.value)
+            })
+        );
+        // history.push("/users/" + currentUser._id);
     };
 
     if (currentUser._id !== userId) {

@@ -5,13 +5,13 @@ import UserCard from "../../ui/userCard";
 import QualitiesCard from "../../ui/qualitiesCard";
 import MeetingsCard from "../../ui/meetingsCard";
 import Comments from "../../ui/comments";
-import { useUsers } from "../../../hooks/useUsers";
-import { CommentsContextProvider } from "../../../hooks/useComments";
+import { useSelector } from "react-redux";
+import { getUserById, getUsersLoadingStatus } from "../../../store/users";
 
 const UserPage = () => {
     const { userId } = useParams();
-    const { isLoading, getUserById } = useUsers();
-    const user = getUserById(userId);
+    const isLoading = useSelector(getUsersLoadingStatus());
+    const user = useSelector(getUserById(userId));
 
     if (isLoading && !user) return <h2>Loading...</h2>;
     return (
@@ -24,9 +24,7 @@ const UserPage = () => {
                         <MeetingsCard value={user.completedMeetings} />
                     </div>
                     <div className="col-md-8">
-                        <CommentsContextProvider>
-                            <Comments />
-                        </CommentsContextProvider>
+                        <Comments />
                     </div>
                 </div>
             </div>

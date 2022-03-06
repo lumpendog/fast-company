@@ -7,18 +7,22 @@ import GroupList from "../../common/groupList";
 import SearchStatus from "../../ui/searchStatus";
 import UsersTable from "../../ui/usersTable";
 import TextField from "../../common/form/textField";
-import { useUsers } from "../../../hooks/useUsers";
-import { useProfession } from "../../../hooks/useProfession";
-import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from "../../../store/professions";
+import { getCurrentUserId, getUsers } from "../../../store/users";
 
 const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [searchText, setSearchText] = useState("");
-    const { users } = useUsers();
-    const { professions, isLoading: professionsLoading } = useProfession();
-    const { currentUser } = useAuth();
+    const users = useSelector(getUsers());
+    const professions = useSelector(getProfessions());
+    const professionsLoading = useSelector(getProfessionsLoadingStatus());
+    const currentUserId = useSelector(getCurrentUserId());
 
     const pageSize = 8;
 
@@ -69,7 +73,7 @@ const UsersListPage = () => {
         } else {
             result = data;
         }
-        result = result.filter((item) => item._id !== currentUser._id);
+        result = result.filter((item) => item._id !== currentUserId);
         return result;
     };
 
