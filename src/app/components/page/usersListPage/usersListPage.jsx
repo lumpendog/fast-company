@@ -64,7 +64,7 @@ const UsersListPage = () => {
         let result;
         if (selectedProf) {
             result = data.filter(
-                (item) => item.profession._id === selectedProf._id
+                (item) => item.profession === selectedProf._id
             );
         } else if (searchText !== "") {
             result = data.filter((item) =>
