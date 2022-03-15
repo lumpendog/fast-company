@@ -10,7 +10,7 @@ const displayDate = (timestamp) => {
     const dateNow = new Date();
     const difYears = dateNow.getFullYear() - date.getFullYear();
     if (difYears === 0) {
-        const difDays = dateNow.getDay() - date.getDay();
+        const difDays = dateNow.getDate() - date.getDate();
         if (difDays === 0) {
             const difHours = dateNow.getHours() - date.getHours();
             if (difHours === 0) {
@@ -25,7 +25,7 @@ const displayDate = (timestamp) => {
             )}`;
         }
 
-        return `${date.getDay()} ${date.toLocaleString("default", {
+        return `${date.getDate()} ${date.toLocaleString("default", {
             month: "long"
         })}`;
     }
