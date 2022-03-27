@@ -5,14 +5,14 @@ import users from "../mockData/users.json";
 import httpService from "../services/http.service";
 
 const useMockData = () => {
-    const statusConsts = {
+    const statusConst = {
         idle: "Not Started",
         pending: "In Process",
-        successed: "Ready",
-        error: "Error occured"
+        success: "Ready",
+        error: "Error occur"
     };
     const [error, setError] = useState(null);
-    const [status, setStatus] = useState(statusConsts.idle);
+    const [status, setStatus] = useState(statusConst.idle);
     const [progress, setProgress] = useState(0);
     const [count, setCount] = useState(0);
     const sumCount = professions.length + qualities.length + users.length;
@@ -22,15 +22,15 @@ const useMockData = () => {
     };
 
     const updateProgress = () => {
-        if (count !== 0 && status === statusConsts.idle) {
-            setStatus(statusConsts.pending);
+        if (count !== 0 && status === statusConst.idle) {
+            setStatus(statusConst.pending);
         }
         const newProgress = Math.floor((count / sumCount) * 100);
         if (newProgress > progress) {
             setProgress(() => newProgress);
         }
         if (progress === 100) {
-            setStatus(statusConsts.successed);
+            setStatus(statusConst.success);
         }
     };
 
@@ -54,7 +54,7 @@ const useMockData = () => {
             }
         } catch (error) {
             setError(error);
-            setStatus(statusConsts.error);
+            setStatus(statusConst.error);
         }
     };
 

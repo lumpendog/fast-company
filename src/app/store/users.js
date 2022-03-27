@@ -144,6 +144,7 @@ function createUser(payload) {
     return async function (dispatch) {
         dispatch(userCreateRequested());
         try {
+            // Check this for mistake, must be content instead of {content}
             const { content } = await userService.create(payload);
             dispatch(userCreated(content));
             history.push("/users");

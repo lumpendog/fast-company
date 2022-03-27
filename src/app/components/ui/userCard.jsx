@@ -3,10 +3,12 @@ import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { getCurrentUserId } from "../../store/users";
+import { getProfessionById } from "../../store/professions";
 
 const UserCard = ({ user }) => {
     const history = useHistory();
     const currentUserId = useSelector(getCurrentUserId());
+    const profession = useSelector(getProfessionById(user.profession));
 
     const handleEditClick = () => {
         history.push(history.location.pathname + "/edit");
@@ -33,7 +35,7 @@ const UserCard = ({ user }) => {
                     <div className="mt-3">
                         <h4>{user.name}</h4>
                         <p className="text-secondary mb-1">
-                            {user.profession.name}
+                            {profession?.name}
                         </p>
                         <div className="text-muted">
                             <i
