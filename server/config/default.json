@@ -1,0 +1,6 @@
+{
+    "port": 8080,
+    "mongoURI": "mongodb://upi7kjddjuynlwitlmsd:0mXzUiqmhGEhEk5i7gf7@b4rbp95eqhsw6fx-mongodb.services.clever-cloud.com:27017/b4rbp95eqhsw6fx",
+    "accessSecret": "Really secret key here",
+    "refreshSecret": "Another really secret key"
+}
