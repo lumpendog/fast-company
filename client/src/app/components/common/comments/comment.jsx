@@ -7,7 +7,8 @@ import { getCurrentUserId, getUserById } from "../../../store/users";
 const Comment = ({ comment, onRemove }) => {
     const currentUserId = useSelector(getCurrentUserId());
 
-    const { _id, userId, content, created_at: createdAt } = comment;
+    const { _id, userId, content, createdAt } = comment;
+
     const user = useSelector(getUserById(userId));
 
     return (

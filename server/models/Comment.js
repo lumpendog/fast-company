@@ -9,7 +9,7 @@ const schema = new Schema(
         userId: { type: Schema.Types.ObjectId, ref: "User", required: true }
     },
     {
-        timestamps: { createdAt: "created_at" }
+        timestamps: true
     }
 );
 

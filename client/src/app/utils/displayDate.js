@@ -6,7 +6,7 @@ const formatTime = (num) => {
 
 const displayDate = (timestamp) => {
     const variantMinutes = [" минуту", " минуты", " минут"];
-    const date = new Date(parseInt(timestamp));
+    const date = new Date(timestamp);
     const dateNow = new Date();
     const difYears = dateNow.getFullYear() - date.getFullYear();
     if (difYears === 0) {
